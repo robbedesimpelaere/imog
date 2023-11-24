@@ -1,6 +1,25 @@
 <script>
+import { ref } from 'vue';
 import AppHeader from './components/AppHeader.vue';
 import AppFooter from './components/AppFooter.vue';
+
+export default {
+  components: { AppHeader, AppFooter },
+  setup() {
+    const loading = ref(true);
+    const houses = ref([]);
+    const getHouses = async function () {
+      const jsonData = await fetch(`https://realestate-api.fgmnts.be/api/v1/homes/?nopagination=true&page=1`).then(function (response) {
+        return response.json();
+      });
+      houses.value = jsonData.data;
+    };
+
+    getHouses();
+    console.log(houses.value);
+    return { loading, houses };
+  },
+};
 </script>
 
 <template>
@@ -35,7 +54,7 @@ import AppFooter from './components/AppFooter.vue';
           <div class="col-md-4">
             <div class="c-pand">
               <div class="c-pand__img">
-                <img src="img/property-1.jpg" alt="" class="c-pand__img img-fluid" />
+                <!-- <img src="img/property-1.jpg" alt="" class="c-pand__img img-fluid" /> -->
               </div>
               <div class="c-pand__overlay">
                 <div class="c-pand__content">
