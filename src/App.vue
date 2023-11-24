@@ -9,17 +9,47 @@ export default {
     const loading = ref(true);
     const houses = ref([]);
 
-    const getHouses = async function () {
-      const jsonData = await fetch(`https://realestate-api.fgmnts.be/api/v1/homes/?nopagination=true&page=1`).then(function (response) {
+    const filters = ref({
+      cities: [],
+      priceMin: undefined,
+      priceMax: undefined,
+      bedrooms: undefined,
+      hometypeid: undefined,
+    });
+
+    const filterData = ref({
+      cities: [],
+      homeTypes: [],
+    });
+
+    const getData = function (url) {
+      return fetch(url).then(function (response) {
         return response.json();
       });
-      houses.value = jsonData.data;
+    };
+
+    const getHouses = async function () {
+      const { data } = await getData(`https://realestate-api.fgmnts.be/api/v1/homes/?nopagination=true&page=1`);
+      houses.value = data;
       loading.value = false;
     };
 
+    const fillFilter = async function () {
+      const cities = await getData(`https://realestate-api.fgmnts.be/api/v1/cities`);
+      filterData.value.cities = cities.data;
+      const homeTypes = await getData(`https://realestate-api.fgmnts.be/api/v1/hometypes`);
+      filterData.value.homeTypes = homeTypes.data;
+    };
+
+    const filterHouses = function () {
+      console.log(filters.value);
+    };
+
     getHouses();
+    fillFilter();
+
     console.log(houses.value);
-    return { loading, houses };
+    return { loading, houses, filterData, filters, filterHouses };
   },
 };
 </script>
@@ -42,6 +72,55 @@ export default {
       </div>
     </section>
     <!-- End Intro -->
+
+    <!-- ======= Search ======= -->
+    <section>
+      <div class="container mb-4">
+        <div class="row">
+          <div class="col-lg-3 col-md-6 mb-2">
+            <div class="form-group mt-3">
+              <label class="form-label" for="gemeente">Gemeentes</label>
+              <select class="form-control" id="gemeente" name="city" multiple v-model="filters.city" @change="filterHouses">
+                <option :value="undefined">Maak een keuze...</option>
+                <option v-for="city in filterData.cities" :value="city.city">{{ city.city }} ({{ city.number_of_homes }})</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 mb-2">
+            <div class="form-group mt-3">
+              <label class="form-label" for="type">Type</label>
+              <select class="form-control" id="type" name="type">
+                <option :value="undefined">Maak een keuze...</option>
+                <option v-for="homeType in filterData.homeTypes" :value="homeType.id">{{ homeType.description }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 mb-2 d-flex">
+            <div class="c-input form-group mt-3 me-1">
+              <label class="form-label" for="prijsmin">Prijs min.</label>
+              <input class="form-control" type="number" step="50000" id="prijsmin" name="pricemin" />
+            </div>
+            <div class="c-input form-group mt-3 ms-1">
+              <label class="form-label" for="prijsmax">max.</label>
+              <input class="form-control" type="number" step="50000" id="prijsmax" name="pricemax" />
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 mb-2">
+            <div class="form-group mt-3">
+              <label class="form-label" for="opp">Slaapkamers min.</label>
+              <select class="form-control" id="opp" name="bedrooms">
+                <option :value="undefined">Maak een keuze...</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Search -->
 
     <!-- ======= Property Grid ======= -->
     <section>
