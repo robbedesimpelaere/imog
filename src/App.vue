@@ -72,15 +72,15 @@ export default {
                     <ul class="c-pand__info d-flex justify-content-around">
                       <li>
                         <h4 class="c-pand__label">Opp</h4>
-                        <span>340m<sup>2</sup></span>
+                        <span>{{ house.squarefootage }}<sup>2</sup></span>
                       </li>
                       <li>
                         <h4 class="c-pand__label">Slpks</h4>
-                        <span>2</span>
+                        <span>{{ house.bedrooms }}</span>
                       </li>
                       <li>
                         <h4 class="c-pand__label">Badk</h4>
-                        <span>4</span>
+                        <span>{{ house.bathrooms }}</span>
                       </li>
                       <li>
                         <h4 class="c-pand__label">Garage</h4>
